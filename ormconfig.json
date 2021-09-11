@@ -1,0 +1,22 @@
+[
+    {
+      "name": "default",
+      "type": "postgres",
+      "host": "localhost",
+      "port": 5432,
+      "username": "postgres",
+      "password": "justine",
+      "database": "wayalist",
+      "migrationsRun": true,
+      "entities": [
+        "src/modules/**/infra/database/entities/*.ts"
+      ],
+      "migrations": [
+        "src/shared/infra/database/migrations/*.ts"
+      ],
+      "cli": {
+        "migrationsDir": "src/shared/infra/database/migrations/"
+      }
+    }
+  ]
+  

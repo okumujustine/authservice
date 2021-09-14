@@ -8,25 +8,29 @@ import IHashProvider from "../providers/HashProvider/IHashProvider";
 import IUserRepository from "../repositories/IUserRepository";
 
 
-interface ILoginResponse{
+interface ILoginResponse {
     user: User
 }
 
 @injectable()
-class LoginUserService{
+class LoginUserService {
     constructor(
         @inject('UserRepository')
         private userRepository: IUserRepository,
-        
+
         @inject('HashProvider')
         private hashProvider: IHashProvider,
-    ){}
+    ) { }
 
-    public async execute({ username_email, password }: ILoginUserDTO):Promise<ILoginResponse> {
+    public async execute({ username_email, password }: ILoginUserDTO): Promise<ILoginResponse> {
         const theUser = await this.userRepository.findByUsernameOrEmail(username_email);
 
-        if(!theUser){
-            throw new AppError(`User with email or username ${username_email} not found`, 401);
+        if (!theUser) {
+            throw new AppError(`User with email or username ${username_email} not found`, 400);
+        }
+
+        if (!theUser?.password) {
+            throw new AppError(`User registered with oath methods.`, 401);
         }
 
         const checkPasswordMatch = await this.hashProvider.compareHash(
@@ -35,10 +39,10 @@ class LoginUserService{
         );
 
         if (!checkPasswordMatch) {
-            throw new AppError('Invalid username or email and password.', 401);
+            throw new AppError('Invalid username or email and password.', 400);
         }
 
-        return { user:theUser };
+        return { user: theUser };
     }
 }
 

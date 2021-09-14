@@ -1,8 +1,10 @@
-import {Router} from "express"
+import { Router } from "express"
 
 import CreateUserController from "../controllers/CreateUserController"
 import CurrentUserController from "../controllers/CurrentUserController"
+import ForgetPasswordController from "../controllers/ForgetPasswordController"
 import LoginUserController from "../controllers/LoginUserController"
+import ResetPasswordController from "../controllers/ResetPasswordController"
 import IsAuthenticated from "../middlewares/IsAuthenticated"
 import { requireAuth } from "../middlewares/RequireAuth"
 const authRoutes = Router()
@@ -11,9 +13,11 @@ const createUserController = new CreateUserController()
 const loginUserController = new LoginUserController()
 const currentUserController = new CurrentUserController()
 const isAuthenticated = new IsAuthenticated()
+const resetPasswordController = new ResetPasswordController()
+const forgetPasswordController = new ForgetPasswordController()
 
 authRoutes.post(
-    '/create', 
+    '/create',
     createUserController.create
 )
 
@@ -44,4 +48,16 @@ authRoutes.post(
     '/logout',
     currentUserController.logout
 )
+
+authRoutes.post(
+    '/reset-password',
+    resetPasswordController.reset
+)
+
+authRoutes.post(
+    '/forget-password',
+    forgetPasswordController.sendForgetPasswordEmail
+)
+
+
 export default authRoutes;

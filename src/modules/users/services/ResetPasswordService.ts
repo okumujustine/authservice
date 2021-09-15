@@ -47,6 +47,8 @@ class ResetPasswordService {
                 password: encryptedPassword
             })
 
+            await this.tokenRepository.deleteToken(token)
+
             return userUpdated
 
         } catch (error) {

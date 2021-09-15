@@ -29,6 +29,15 @@ class TokenRepository implements ITokenRepository {
         return this.save(token);
     }
 
+    public async deleteToken(tokenData: string): Promise<any> {
+        await this.ormRepository
+            .createQueryBuilder('tokens')
+            .delete()
+            .from(Token)
+            .where("token = :token", { token: tokenData })
+            .execute();
+    }
+
     public async save(token: Token): Promise<Token> {
         return this.ormRepository.save(token);
     }

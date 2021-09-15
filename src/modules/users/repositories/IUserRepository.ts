@@ -9,4 +9,5 @@ export default interface IUsersRepository {
   create(data: ICreateUserDTO): Promise<User>;
   save(user: User): Promise<User>;
   createUserThroughOauth(data: ICreateUserThroughOauthDTO): Promise<User>;
+  updateUserPassword({ userId, password }: { userId: string, password: string }): Promise<any>;
 }

@@ -1,15 +1,17 @@
 
+import ResetPasswordService from '@modules/users/services/ResetPasswordService';
 import { Request, Response } from 'express';
+import { container } from 'tsyringe';
 
 export default class ResetPasswordController {
     public async reset(req: Request, res: Response) {
         const { token, userId } = req.params
-        const { password } = req.body
+        const { password, password2 } = req.body
 
-        console.log(token, userId)
-        console.log(password)
+        const resetPasswordService = container.resolve(ResetPasswordService);
 
-        console.log("reset it")
-        return res.status(201).json({ ok: true });
+        await resetPasswordService.execute({ token, userId, password, password2 });
+
+        return res.status(201).json({ message: "Password successfully updated, login" });
     }
 }

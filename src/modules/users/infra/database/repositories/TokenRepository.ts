@@ -16,6 +16,14 @@ class TokenRepository implements ITokenRepository {
         });
     }
 
+    public findByUserIdAndToken({ userId, token }: { userId: string, token: string }): Promise<Token | undefined> {
+        return this.ormRepository
+            .createQueryBuilder('tokens')
+            .where('tokens.user = :userId', { userId })
+            .andWhere('tokens.token = :token', { token })
+            .getOne();
+    }
+
     public async createToken(tokenData: Token): Promise<Token> {
         const token = await this.ormRepository.create(tokenData)
         return this.save(token);

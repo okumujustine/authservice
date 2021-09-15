@@ -46,6 +46,17 @@ class UserRepository implements IUserRepository {
     return user;
   }
 
+  public async updateUserPassword({ userId, password }: { userId: string, password: string }): Promise<any> {
+
+    const updatedUser = await this.ormRepository.createQueryBuilder('users')
+      .update(User)
+      .set({ password: password })
+      .where("id = :id", { id: userId })
+      .execute();
+
+    return updatedUser;
+  }
+
 
   public async save(user: User): Promise<User> {
     return this.ormRepository.save(user);

@@ -31,9 +31,9 @@ class SendEmailPasswordRecoveryService {
             throw new AppError('User does not exist.', 401);
         }
 
-        const token = await this.tokenRepository.findByUserId(user.id)
+        const userToken = await this.tokenRepository.findByUserId(user.id)
 
-        if (!token) {
+        if (!userToken) {
             await this.tokenRepository.createToken({
                 user: user.id,
                 token: crypto.randomBytes(32).toString("hex"),
@@ -43,7 +43,7 @@ class SendEmailPasswordRecoveryService {
         try {
             const fromEmail = process.env.EMAIL_CLIENT_EMAIL as string;
 
-            const link = `<p>${process.env.BASE_URL}/password-reset/${user.id}/${token}</p>`;
+            const link = `<p>${process.env.BASE_URL}/reset-password/${user.id}/${userToken?.token}</p>`;
 
             const mailOptions = {
                 from: fromEmail,

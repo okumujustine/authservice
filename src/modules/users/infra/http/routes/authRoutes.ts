@@ -50,7 +50,7 @@ authRoutes.post(
 )
 
 authRoutes.post(
-    '/reset-password',
+    '/reset-password/:userId/:token',
     resetPasswordController.reset
 )
 

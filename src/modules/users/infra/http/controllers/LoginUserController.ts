@@ -57,7 +57,6 @@ export default class LoginUserController {
       const { email } = verifiedUser.payload
 
       const userByEmail = await userGeneralService.findUserByEmail(email)
-      console.log("userByEmail", userByEmail)
 
       if (userByEmail) {
         try {

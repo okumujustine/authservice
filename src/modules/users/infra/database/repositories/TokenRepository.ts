@@ -39,7 +39,8 @@ class TokenRepository implements ITokenRepository {
     }
 
     public async save(token: Token): Promise<Token> {
-        return this.ormRepository.save(token);
+        const tokenCreated = await this.ormRepository.save(token);
+        return tokenCreated
     }
 }
 

@@ -33,15 +33,15 @@ class UserRepository implements IUserRepository {
   }
 
   public async create(userData: ICreateUserDTO): Promise<User> {
-    const user = this.ormRepository.create(userData);
-    this.save(user);
+    const user = await this.ormRepository.create(userData);
+    await this.save(user);
 
     return user;
   }
 
   public async createUserThroughOauth(userData: ICreateUserThroughOauthDTO): Promise<User> {
-    const user = this.ormRepository.create(userData);
-    this.save(user);
+    const user = await this.ormRepository.create(userData);
+    await this.save(user);
 
     return user;
   }

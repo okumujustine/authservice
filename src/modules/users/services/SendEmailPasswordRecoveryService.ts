@@ -33,17 +33,23 @@ class SendEmailPasswordRecoveryService {
 
         const userToken = await this.tokenRepository.findByUserId(user.id)
 
+        let finalToken
+        finalToken = userToken?.token
+
         if (!userToken) {
-            await this.tokenRepository.createToken({
+            const newToken = await this.tokenRepository.createToken({
                 user: user.id,
                 token: crypto.randomBytes(32).toString("hex"),
             })
+
+            finalToken = newToken.token
         }
+
 
         try {
             const fromEmail = process.env.EMAIL_CLIENT_EMAIL as string;
 
-            const link = `<p>${process.env.BASE_URL}/reset-password/${user.id}/${userToken?.token}</p>`;
+            const link = `<p>${process.env.BASE_URL}/reset-password/${user.id}/${finalToken}</p>`;
 
             const mailOptions = {
                 from: fromEmail,

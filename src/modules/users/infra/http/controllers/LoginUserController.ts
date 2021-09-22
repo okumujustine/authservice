@@ -198,9 +198,6 @@ export default class LoginUserController {
 
     const getUserEmailAddress = await linkedInService.executeGetUserEmailAddress(token)
 
-    // console.log("getUserEmailAddress", getUserEmailAddress["elements"][0]["handle~"]["emailAddress"])
-
-
     return res.status(200).json({ userEmailAddress: getUserEmailAddress })
   }
 

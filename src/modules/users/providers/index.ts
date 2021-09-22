@@ -11,6 +11,8 @@ import IHashProvider from './HashProvider/IHashProvider';
 import HashProvider from './HashProvider/implementation/HashProvider';
 import IJwtProvider from './jwt/IJwtProvider';
 import JwtProvider from './jwt/implementation/JwtProvider';
+import ILinkedInProvider from './linkedin/ILinkedInProvider';
+import LinkedInProvider from './linkedin/implementation/LinkedInProvider';
 import UsernameGeneratorProvider from './UsernameGenerator/implementation/UsernameGeneratorProvider';
 import IUsernameGeneratorProvider from './UsernameGenerator/IUsernameGeneratorProvider';
 
@@ -20,3 +22,4 @@ container.registerSingleton<IJwtProvider>('JwtProvider', JwtProvider);
 container.registerSingleton<IGoogleProvider>('GoogleProvider', GoogleProvider);
 container.registerSingleton<IFacebookProvider>('FacebookProvider', FacebookProvider);
 container.registerSingleton<IEmailProvider>('EmailProvider', EmailProvider);
+container.registerSingleton<ILinkedInProvider>('LinkedInProvider', LinkedInProvider);

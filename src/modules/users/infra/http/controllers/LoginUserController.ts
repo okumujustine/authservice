@@ -2,6 +2,7 @@ import CreateUserService from '@modules/users/services/CreateUserService';
 import FacebookService from '@modules/users/services/FacebookService';
 import GoogleService from '@modules/users/services/GoogleService';
 import JwtService from '@modules/users/services/JwtService';
+import LinkedInService from '@modules/users/services/LinkedInService';
 import LoginUserService from '@modules/users/services/LoginUserService';
 import UserGeneralService from '@modules/users/services/UserGeneralService';
 import UsernameService from '@modules/users/services/UsernameService';
@@ -117,4 +118,90 @@ export default class LoginUserController {
       throw new AppError("Invalid facebook token, try again later", 400);
     }
   }
+
+
+  public async LinkedInLogin(req: Request, res: Response) {
+    const linkedInService = container.resolve(LinkedInService);
+    const jwtService = container.resolve(JwtService);
+    const usernameService = container.resolve(UsernameService);
+    const createUser = container.resolve(CreateUserService);
+    const userGeneralService = container.resolve(UserGeneralService)
+
+    const { code } = req.body;
+
+    if (!code) {
+      throw new AppError("Code not provided", 400);
+    }
+
+    const getUserToken = await linkedInService.executeGetAccessToken(code)
+
+    const accessToken = getUserToken["access_token"]
+
+    const getUserEmailAddress = await linkedInService.executeGetUserEmailAddress(accessToken)
+
+    if (!getUserEmailAddress) {
+      throw new Error("Error getting user email address")
+    }
+
+    const userByEmail = await userGeneralService.findUserByEmail(getUserEmailAddress)
+
+    if (userByEmail) {
+      try {
+        const token = await jwtService.executeSign({
+          id: userByEmail.id,
+          username: userByEmail.username,
+          email: userByEmail.email
+        })
+
+        req.session = { jwt: token };
+
+        return res.status(200).json(classToClass(userByEmail));
+      } catch (err) {
+        throw new AppError("Failed to get token", 400);
+      }
+    }
+
+
+    if (!userByEmail) {
+      const username = await usernameService.generateUniqueUsername()
+
+      const formattedEmail = getUserEmailAddress as string
+
+      const user = await createUser.createUserThroughSocialLogin({
+        username,
+        email: formattedEmail
+      });
+
+      const token = await jwtService.executeSign({
+        id: user.id,
+        username: user.username,
+        email: user.email
+      })
+
+      req.session = { jwt: token };
+
+      return res.status(200).json(classToClass(user));
+    }
+
+    return res.status(200).json({ userToken: true })
+
+  }
+
+  public async verifyLinkedInToken(req: Request, res: Response) {
+    const linkedInService = container.resolve(LinkedInService);
+
+    const { token } = req.body;
+
+    if (!token) {
+      throw new AppError("Token not provided", 400);
+    }
+
+    const getUserEmailAddress = await linkedInService.executeGetUserEmailAddress(token)
+
+    // console.log("getUserEmailAddress", getUserEmailAddress["elements"][0]["handle~"]["emailAddress"])
+
+
+    return res.status(200).json({ userEmailAddress: getUserEmailAddress })
+  }
+
 }

@@ -36,6 +36,16 @@ authRoutes.post(
     loginUserController.facebookLogin
 )
 
+authRoutes.post(
+    '/o_auth/linkedin',
+    loginUserController.LinkedInLogin
+)
+
+authRoutes.post(
+    '/o_auth/verify_linkedin_token',
+    loginUserController.verifyLinkedInToken
+)
+
 
 authRoutes.get(
     '/currentuser',

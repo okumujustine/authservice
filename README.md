@@ -1,7 +1,7 @@
 ### NOTIFICATION SERVICE
 
 ##### * Prerequisites
-- install mongodb 4.4.0.
+- install postgres 9.5
 - create a database named **wayalist**
 
 

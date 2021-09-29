@@ -107,13 +107,58 @@ export default class LoginUserController {
 
   public async facebookLogin(req: Request, res: Response) {
     const facebookService = container.resolve(FacebookService);
+    const userGeneralService = container.resolve(UserGeneralService)
+    const jwtService = container.resolve(JwtService);
+    const usernameService = container.resolve(UsernameService);
+    const createUser = container.resolve(CreateUserService);
 
     const { facebookToken, userId } = req.body;
 
     try {
       const verifiedUser = await facebookService.executeVerifyToken(facebookToken, userId)
+      const email = JSON.parse(verifiedUser).email
 
-      return res.status(200).json({ userVerified: verifiedUser })
+      const userByEmail = await userGeneralService.findUserByEmail(email)
+
+      if (userByEmail) {
+        try {
+          const token = await jwtService.executeSign({
+            id: userByEmail.id,
+            username: userByEmail.username,
+            email: userByEmail.email
+          })
+
+          req.session = { jwt: token };
+
+          return res.status(200).json(classToClass(userByEmail));
+        } catch (err) {
+          throw new AppError("Failed to get token", 400);
+        }
+      }
+
+      if (!userByEmail) {
+        const username = await usernameService.generateUniqueUsername()
+
+        const formattedEmail = email as string
+
+        const user = await createUser.createUserThroughSocialLogin({
+          username,
+          email: formattedEmail
+        });
+
+        const token = await jwtService.executeSign({
+          id: user.id,
+          username: user.username,
+          email: user.email
+        })
+
+        req.session = { jwt: token };
+
+        return res.status(200).json(classToClass(user));
+      }
+
+      res.status(200).send({ user_needs_to_register: true })
+
     } catch (err) {
       throw new AppError("Invalid facebook token, try again later", 400);
     }
